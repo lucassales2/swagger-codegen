@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.*;
 
-public class KotlinRetrofitClientCodegen extends DefaultCodegen implements CodegenConfig {
+public class KotlinRetrofitClientCodegen extends AbstractKotlinCodegen {
     static Logger LOGGER = LoggerFactory.getLogger(KotlinRetrofitClientCodegen.class);
 
     protected String groupId = "com.robotsandpencils";
@@ -41,98 +41,6 @@ public class KotlinRetrofitClientCodegen extends DefaultCodegen implements Codeg
         apiPackage = packageName + ".apis";
         modelPackage = packageName + ".models";
 
-        languageSpecificPrimitives = new HashSet<String>(Arrays.asList(
-                "Byte",
-                "Short",
-                "Int",
-                "Long",
-                "Float",
-                "Double",
-                "Boolean",
-                "Char",
-                "String",
-                "Array",
-                "kotlin.collections.List",
-                "kotlin.collections.Map",
-                "kotlin.collections.Set"
-        ));
-
-        // this includes hard reserved words defined by https://github.com/JetBrains/kotlin/blob/master/core/descriptors/src/org/jetbrains/kotlin/renderer/KeywordStringsGenerated.java
-        // as well as select soft (contextual) keywords
-        reservedWords = new HashSet<String>(Arrays.asList(
-                "abstract",
-                "as",
-                "break",
-                "case",
-                "catch",
-                "class",
-                "continue",
-                "do",
-                "else",
-                "false",
-                "final",
-                "finally",
-                "for",
-                "fun",
-                "if",
-                "in",
-                "interface",
-                "is",
-                "it",
-                "lazy",
-                "null",
-                "object",
-                "override",
-                "package",
-                "private",
-                "protected",
-                "public",
-                "return",
-                "sealed",
-                "super",
-                "this",
-                "throw",
-                "true",
-                "try",
-                "typealias",
-                "typeof",
-                "val",
-                "var",
-                "when",
-                "while"
-        ));
-
-        defaultIncludes = new HashSet<String>(Arrays.asList(
-                "kotlin.Byte",
-                "kotlin.Short",
-                "kotlin.Int",
-                "kotlin.Long",
-                "kotlin.Float",
-                "kotlin.Double",
-                "kotlin.Boolean",
-                "kotlin.Char",
-                "kotlin.Array",
-                "kotlin.collections.List",
-                "kotlin.collections.Set",
-                "kotlin.collections.Map"
-        ));
-
-        typeMapping = new HashMap<String, String>();
-        typeMapping.put("string", "String");
-        typeMapping.put("boolean", "Boolean");
-        typeMapping.put("integer", "Int");
-        typeMapping.put("float", "Float");
-        typeMapping.put("long", "Long");
-        typeMapping.put("double", "Double");
-        typeMapping.put("number", "java.math.BigDecimal");
-        typeMapping.put("date-time", "String");
-        typeMapping.put("date", "String");
-        typeMapping.put("file", "java.io.File");
-        typeMapping.put("array", "Array");
-        typeMapping.put("list", "Array");
-        typeMapping.put("map", "kotlin.collections.Map");
-        typeMapping.put("object", "Any");
-        typeMapping.put("Object", "Any");
         typeMapping.put("binary", "Array<Byte>");
         typeMapping.put("Date", "String");
         typeMapping.put("DateTime", "String");
@@ -140,11 +48,6 @@ public class KotlinRetrofitClientCodegen extends DefaultCodegen implements Codeg
         instantiationTypes.put("array", "arrayOf");
         instantiationTypes.put("list", "arrayOf");
         instantiationTypes.put("map", "mapOf");
-
-        importMapping = new HashMap<String, String>();
-        importMapping.put("BigDecimal", "java.math.BigDecimal");
-        importMapping.put("UUID", "java.util.UUID");
-        importMapping.put("File", "java.io.File");
         importMapping.put("Date", "java.util.Date");
         importMapping.put("Timestamp", "java.sql.Timestamp");
         importMapping.put("DateTime", "java.time.LocalDateTime");
@@ -212,19 +115,19 @@ public class KotlinRetrofitClientCodegen extends DefaultCodegen implements Codeg
             additionalProperties.put(CodegenConstants.PACKAGE_NAME, packageName);
         }
 
-        if(additionalProperties.containsKey(CodegenConstants.ARTIFACT_ID)) {
+        if (additionalProperties.containsKey(CodegenConstants.ARTIFACT_ID)) {
             this.setArtifactId((String) additionalProperties.get(CodegenConstants.ARTIFACT_ID));
         } else {
             additionalProperties.put(CodegenConstants.ARTIFACT_ID, artifactId);
         }
 
-        if(additionalProperties.containsKey(CodegenConstants.GROUP_ID)) {
+        if (additionalProperties.containsKey(CodegenConstants.GROUP_ID)) {
             this.setGroupId((String) additionalProperties.get(CodegenConstants.GROUP_ID));
         } else {
             additionalProperties.put(CodegenConstants.GROUP_ID, groupId);
         }
 
-        if(additionalProperties.containsKey(CodegenConstants.ARTIFACT_VERSION)) {
+        if (additionalProperties.containsKey(CodegenConstants.ARTIFACT_VERSION)) {
             this.setArtifactVersion((String) additionalProperties.get(CodegenConstants.ARTIFACT_VERSION));
         } else {
             additionalProperties.put(CodegenConstants.ARTIFACT_VERSION, artifactVersion);
@@ -248,15 +151,15 @@ public class KotlinRetrofitClientCodegen extends DefaultCodegen implements Codeg
 
         final String infrastructureFolder = (sourceFolder + File.separator + packageName + File.separator + "infrastructure").replace(".", "/");
 
-        supportingFiles.add(new SupportingFile("infrastructure/ApiClient.kt.mustache", infrastructureFolder, "ApiClient.kt"));
-        supportingFiles.add(new SupportingFile("infrastructure/ApiAbstractions.kt.mustache", infrastructureFolder, "ApiAbstractions.kt"));
-        supportingFiles.add(new SupportingFile("infrastructure/ApiInfrastructureResponse.kt.mustache", infrastructureFolder, "ApiInfrastructureResponse.kt"));
-        supportingFiles.add(new SupportingFile("infrastructure/ApplicationDelegates.kt.mustache", infrastructureFolder, "ApplicationDelegates.kt"));
-        supportingFiles.add(new SupportingFile("infrastructure/RequestConfig.kt.mustache", infrastructureFolder, "RequestConfig.kt"));
-        supportingFiles.add(new SupportingFile("infrastructure/RequestMethod.kt.mustache", infrastructureFolder, "RequestMethod.kt"));
-        supportingFiles.add(new SupportingFile("infrastructure/ResponseExtensions.kt.mustache", infrastructureFolder, "ResponseExtensions.kt"));
-        supportingFiles.add(new SupportingFile("infrastructure/Serializer.kt.mustache", infrastructureFolder, "Serializer.kt"));
-        supportingFiles.add(new SupportingFile("infrastructure/Errors.kt.mustache", infrastructureFolder, "Errors.kt"));
+        supportingFiles.add(new SupportingFile("infrastructure/RestModule.kt.mustache", infrastructureFolder, "RestModule.kt"));
+//        supportingFiles.add(new SupportingFile("infrastructure/ApiAbstractions.kt.mustache", infrastructureFolder, "ApiAbstractions.kt"));
+//        supportingFiles.add(new SupportingFile("infrastructure/ApiInfrastructureResponse.kt.mustache", infrastructureFolder, "ApiInfrastructureResponse.kt"));
+//        supportingFiles.add(new SupportingFile("infrastructure/ApplicationDelegates.kt.mustache", infrastructureFolder, "ApplicationDelegates.kt"));
+//        supportingFiles.add(new SupportingFile("infrastructure/RequestConfig.kt.mustache", infrastructureFolder, "RequestConfig.kt"));
+//        supportingFiles.add(new SupportingFile("infrastructure/RequestMethod.kt.mustache", infrastructureFolder, "RequestMethod.kt"));
+//        supportingFiles.add(new SupportingFile("infrastructure/ResponseExtensions.kt.mustache", infrastructureFolder, "ResponseExtensions.kt"));
+//        supportingFiles.add(new SupportingFile("infrastructure/Serializer.kt.mustache", infrastructureFolder, "Serializer.kt"));
+//        supportingFiles.add(new SupportingFile("infrastructure/Errors.kt.mustache", infrastructureFolder, "Errors.kt"));
     }
 
     @Override
@@ -305,7 +208,7 @@ public class KotlinRetrofitClientCodegen extends DefaultCodegen implements Codeg
      */
     @Override
     public String toModelName(String name) {
-        if(!name.startsWith("kotlin.") && !name.startsWith("java.")) {
+        if (name != null && !name.startsWith("kotlin.") && !name.startsWith("java.")) {
             return initialCaps(modelNamePrefix + name + modelNameSuffix);
         } else {
             return name;
@@ -333,7 +236,6 @@ public class KotlinRetrofitClientCodegen extends DefaultCodegen implements Codeg
         }
         return toModelName(type);
     }
-
 
 
     /**
@@ -381,7 +283,7 @@ public class KotlinRetrofitClientCodegen extends DefaultCodegen implements Codeg
     public String toModelImport(String name) {
         // toModelImport is called while processing operations, but DefaultCodegen doesn't
         // define imports correctly with fully qualified primitives and models as defined in this generator.
-        if(needToImport(name)) {
+        if (needToImport(name)) {
             return super.toModelImport(name);
         }
 
