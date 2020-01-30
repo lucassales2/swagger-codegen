@@ -37,8 +37,8 @@ interface {{classname}} {
   {{/prioritizedContentTypes}}
   {{/formParams}}  
   @{{httpMethod}}("{{{path}}}")
-  fun {{operationId}}({{^allParams}}){{/allParams}}{{#allParams}}{{>libraries/retrofit2-kotlin/queryParams}}{{>libraries/retrofit2-kotlin/pathParams}}{{>libraries/retrofit2-kotlin/headerParams}}{{>libraries/retrofit2-kotlin/bodyParams}}{{>libraries/retrofit2-kotlin/formParams}}{{^-last}},
-  {{/-last}}{{#-last}}):{{/-last}}{{/allParams}} Call<{{#isResponseFile}}ResponseBody{{/isResponseFile}}{{^isResponseFile}}{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}retrofit2.Response<okhttp3.ResponseBody>{{/returnType}}{{/isResponseFile}}>
+  suspend fun {{operationId}}({{^allParams}}){{/allParams}}{{#allParams}}{{>libraries/retrofit2-kotlin/queryParams}}{{>libraries/retrofit2-kotlin/pathParams}}{{>libraries/retrofit2-kotlin/headerParams}}{{>libraries/retrofit2-kotlin/bodyParams}}{{>libraries/retrofit2-kotlin/formParams}}{{^-last}},
+  {{/-last}}{{#-last}}):{{/-last}}{{/allParams}} Response<{{#isResponseFile}}ResponseBody{{/isResponseFile}}{{^isResponseFile}}{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}retrofit2.Response<okhttp3.ResponseBody>{{/returnType}}{{/isResponseFile}}>
 
   {{/operation}}
 }
